@@ -1,4 +1,7 @@
-const _ = require('lodash');
+const map = require('lodash.keys');
+const keys = require('lodash.keys');
+const set = require('lodash.set');
+const get = require('lodash.get');
 const {
   sliceRelation
 } = require('./utils');
@@ -14,12 +17,12 @@ const toRelationSubExpression = (tree, relationName) => {
   if (Object.keys(tree).length === 0) return relationName;
 
   // Recursively apply to all attributes
-  const expression = _.map(tree, toRelationSubExpression).join(',');
+  const expression = map(tree, toRelationSubExpression).join(',');
 
   // The first time this is called, there is no relationName
   const prefix = relationName ? `${relationName}.` : '';
 
-  return _.keys(tree).length === 1
+  return keys(tree).length === 1
     ? `${prefix}${expression}`
     : `${prefix}[${expression}]`;
 };
@@ -39,10 +42,10 @@ const createRelationExpression = (fields = []) => {
     if (!relationName) return;
 
     // Set the node of the tree if it doesn't exist yet
-    _.set(
+    set(
       tree,
       relationName,
-      _.get(tree, relationName, {})
+      get(tree, relationName, {})
     );
   });
 

@@ -15,7 +15,10 @@
  * However, for 'require' conditions, this might be possible since ALL variables exist
  * in the same scope, since there's a join
  */
-const _ = require('lodash');
+const map = require('lodash.keys');
+const isArray = require('lodash.isarray');
+const forEach = require('lodash.foreach');
+
 const { debug } = require('../config');
 const {
   sliceRelation,
@@ -152,7 +155,7 @@ const buildAggregation = function(aggregation, builder, utils) {
   // Filtering starts using the outermost model as a base
   const OuterModel = getOuterModel(builder, relation);
 
-  const idColumns = _.isArray(OuterModel.idColumn)
+  const idColumns = isArray(OuterModel.idColumn)
     ? OuterModel.idColumn
     : [OuterModel.idColumn];
   const fullIdColumns = idColumns.map(
@@ -214,7 +217,7 @@ const applyAggregations = function(aggregations = [], builder, utils) {
   const Model = builder.modelClass();
   const knex = Model.knex();
   const aggAlias = i => `agg_${i}`;
-  const idColumns = _.isArray(Model.idColumn) ? Model.idColumn : [Model.idColumn];
+  const idColumns = isArray(Model.idColumn) ? Model.idColumn : [Model.idColumn];
   const fullIdColumns = idColumns.map(id => `${Model.tableName}.${id}`);
 
   const aggregationQueries = aggregations.map(
@@ -349,7 +352,7 @@ const applyRequire = function (filter = {}, builder, utils) {
   const getFullyQualifiedName = name => sliceRelation(name, '.', Model.tableName).fullyQualifiedProperty;
 
   const Model = builder.modelClass();
-  const idColumns = _.isArray(Model.idColumn) ? Model.idColumn : [Model.idColumn];
+  const idColumns = isArray(Model.idColumn) ? Model.idColumn : [Model.idColumn];
   const fullIdColumns = idColumns.map(idColumn => `${Model.tableName}.${idColumn}`);
 
   // If there are no related properties, don't join
@@ -389,7 +392,7 @@ const applyWhere = function (filter = {}, builder, utils) {
   const { applyPropertyExpression } = utils;
   const Model = builder.modelClass();
 
-  _.forEach(filter, (andExpression, property) => {
+  forEach(filter, (andExpression, property) => {
     const { relationName, propertyName } = sliceRelation(property);
 
     if (!relationName) {
@@ -489,7 +492,7 @@ const applyFields = function (fields = [], builder) {
   selectFields(rootFields, builder);
 
   // Related fields
-  _.map(fieldsByRelation, (_fields, relationName) => selectFields(
+  map(fieldsByRelation, (_fields, relationName) => selectFields(
     _fields, builder, relationName
   ));
 

@@ -1,6 +1,8 @@
 const OR = '$or';
 const AND = '$and';
-const _ = require('lodash');
+const isArray = require('lodash.isarray');
+const toPairs = require('lodash.topairs');
+const uniq = require('lodash.uniq');
 const { debug } = require('../config');
 
 /**
@@ -11,8 +13,8 @@ const { debug } = require('../config');
  * @returns {Array<Object>}
  */
 const arrayize = function(objectOrArray) {
-  if (_.isArray(objectOrArray)) return objectOrArray;
-  return _.toPairs(objectOrArray).map(item => ({ [item[0]]: item[1] }));
+  if (isArray(objectOrArray)) return objectOrArray;
+  return toPairs(objectOrArray).map(item => ({ [item[0]]: item[1] }));
 };
 
 /**
@@ -36,7 +38,7 @@ const getPropertiesFromExpression = function(expression = {}, test = () => true)
     }
   }
 
-  return _.uniq(properties);
+  return uniq(properties);
 };
 
 /**
